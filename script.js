@@ -12,6 +12,10 @@ class GistManager {
     // Veri kaydetme
     async saveData(data) {
         try {
+            console.log('Gist saveData başlatıldı');
+            console.log('Token:', this.token ? 'Mevcut' : 'Yok');
+            console.log('Gist ID:', this.gistId);
+            
             const content = JSON.stringify(data, null, 2);
             const filename = 'kizilay-hesaplama-data.json';
             
@@ -32,15 +36,22 @@ class GistManager {
                 })
             });
             
+            console.log('API Response Status:', response.status);
+            console.log('API Response OK:', response.ok);
+            
             if (response.ok) {
                 console.log('Veriler GitHub Gist\'e kaydedildi!');
                 return true;
             } else {
+                const errorText = await response.text();
+                console.log('API Error Response:', errorText);
+                
                 // Eğer Gist bulunamazsa, yeni oluştur
                 if (response.status === 404) {
+                    console.log('Gist bulunamadı, yeni oluşturuluyor...');
                     return await this.createNewGist(data);
                 }
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
             }
             
         } catch (error) {
@@ -89,11 +100,18 @@ class GistManager {
     // Veri yükleme
     async loadData() {
         try {
+            console.log('Gist loadData başlatıldı');
+            console.log('Token:', this.token ? 'Mevcut' : 'Yok');
+            console.log('Gist ID:', this.gistId);
+            
             const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
                 headers: {
                     'Authorization': `token ${this.token}`,
                 }
             });
+            
+            console.log('API Response Status:', response.status);
+            console.log('API Response OK:', response.ok);
             
             if (response.ok) {
                 const gist = await response.json();
@@ -101,16 +119,20 @@ class GistManager {
                 
                 if (gist.files && gist.files[filename]) {
                     const content = gist.files[filename].content;
+                    console.log('Gist\'ten veri alındı');
                     return JSON.parse(content);
+                } else {
+                    console.log('Gist dosyası bulunamadı');
+                    return null;
                 }
             } else if (response.status === 404) {
                 console.log('Gist bulunamadı, yeni oluşturulacak');
                 return null;
             } else {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const errorText = await response.text();
+                console.log('API Error Response:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
             }
-            
-            return null;
             
         } catch (error) {
             console.error('Gist yükleme hatası:', error);
@@ -371,21 +393,13 @@ class CalculationTable {
                 return;
             }
             
-            // Önce localStorage'a kaydet
-            try {
-                localStorage.setItem('calculationTableData', JSON.stringify(filteredData));
-                console.log('Veri localStorage\'a kaydedildi');
-            } catch (localStorageError) {
-                console.log('localStorage hatası:', localStorageError);
-            }
-            
-            // GitHub Gist'e kaydetme
+            // Sadece GitHub Gist'e kaydetme
             const success = await gistManager.saveData(filteredData);
             
             if (success) {
-                this.showNotification('Veriler kaydedildi ve senkronize edildi!', 'success');
+                this.showNotification('Veriler başarıyla kaydedildi!', 'success');
             } else {
-                this.showNotification('Veriler sadece yerel olarak kaydedildi.', 'warning');
+                this.showNotification('Veriler kaydedilemedi!', 'error');
             }
             
         } catch (error) {
@@ -428,37 +442,24 @@ class CalculationTable {
         try {
             console.log('loadData fonksiyonu çağrıldı');
             
-            // Önce GitHub Gist'ten yükle
+            // Sadece GitHub Gist'ten yükle
             const gistData = await gistManager.loadData();
             
             if (gistData) {
                 this.loadTableData(gistData);
-                this.showNotification('Veriler GitHub\'dan yüklendi!', 'success');
+                this.showNotification('Veriler yüklendi!', 'success');
                 return;
             }
             
-            // Gist'ten yüklenemezse localStorage'dan yükle
-            const savedData = localStorage.getItem('calculationTableData');
-            console.log('localStorage\'dan alınan veri:', savedData);
+            // Gist'ten veri yoksa örnek veriler yükle
+            this.loadSampleData();
+            this.showNotification('Örnek veriler yüklendi.', 'info');
             
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                console.log('Parse edilen veri:', data);
-                
-                if (Array.isArray(data) && data.length > 0) {
-                    this.loadTableData(data);
-                    this.showNotification('Veriler yerel olarak yüklendi.', 'info');
-                } else {
-                    this.loadSampleData();
-                    this.showNotification('Örnek veriler yüklendi.', 'info');
-                }
-            } else {
-                this.loadSampleData();
-                this.showNotification('Örnek veriler yüklendi.', 'info');
-            }
         } catch (error) {
             console.error('Veri yükleme hatası:', error);
             this.showNotification('Veri yüklenirken hata oluştu!', 'error');
+            // Hata durumunda örnek veriler yükle
+            this.loadSampleData();
         }
     }
 
