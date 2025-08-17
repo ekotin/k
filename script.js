@@ -1,6 +1,6 @@
 // GitHub Gist API Konfigürasyonu
 const GITHUB_TOKEN = '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'; // GitHub Personal Access Token
-const GIST_ID = null; // İlk kullanımda null, sonra otomatik doldurulacak
+const GIST_ID = 'kizilay-hesaplama-gist'; // Sabit Gist ID - tüm cihazlar için aynı
 
 // Gist API fonksiyonları
 class GistManager {
@@ -15,49 +15,33 @@ class GistManager {
             const content = JSON.stringify(data, null, 2);
             const filename = 'kizilay-hesaplama-data.json';
             
-            if (!this.gistId) {
-                // Yeni Gist oluştur
-                const response = await fetch('https://api.github.com/gists', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        description: 'Kızılay Bayraklı Şube Hesaplama Verileri',
-                        public: false,
-                        files: {
-                            [filename]: {
-                                content: content
-                            }
+            // Sabit Gist ID ile güncelleme yap
+            const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${this.token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    description: 'Kızılay Bayraklı Şube Hesaplama Verileri',
+                    files: {
+                        [filename]: {
+                            content: content
                         }
-                    })
-                });
-                
-                const result = await response.json();
-                this.gistId = result.id;
-                localStorage.setItem('gist_id', this.gistId);
-                
-            } else {
-                // Mevcut Gist'i güncelle
-                await fetch(`https://api.github.com/gists/${this.gistId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        files: {
-                            [filename]: {
-                                content: content
-                            }
-                        }
-                    })
-                });
-            }
+                    }
+                })
+            });
             
-            console.log('Veriler GitHub Gist\'e kaydedildi!');
-            return true;
+            if (response.ok) {
+                console.log('Veriler GitHub Gist\'e kaydedildi!');
+                return true;
+            } else {
+                // Eğer Gist bulunamazsa, yeni oluştur
+                if (response.status === 404) {
+                    return await this.createNewGist(data);
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
             
         } catch (error) {
             console.error('Gist kaydetme hatası:', error);
@@ -65,26 +49,65 @@ class GistManager {
         }
     }
 
+    // Yeni Gist oluşturma
+    async createNewGist(data) {
+        try {
+            const content = JSON.stringify(data, null, 2);
+            const filename = 'kizilay-hesaplama-data.json';
+            
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${this.token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    description: 'Kızılay Bayraklı Şube Hesaplama Verileri',
+                    public: false,
+                    files: {
+                        [filename]: {
+                            content: content
+                        }
+                    }
+                })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Yeni Gist oluşturuldu:', result.id);
+                return true;
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+        } catch (error) {
+            console.error('Yeni Gist oluşturma hatası:', error);
+            return false;
+        }
+    }
+
     // Veri yükleme
     async loadData() {
         try {
-            if (!this.gistId) {
-                this.gistId = localStorage.getItem('gist_id');
-                if (!this.gistId) return null;
-            }
-            
             const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
                 headers: {
                     'Authorization': `token ${this.token}`,
                 }
             });
             
-            const gist = await response.json();
-            const filename = 'kizilay-hesaplama-data.json';
-            
-            if (gist.files && gist.files[filename]) {
-                const content = gist.files[filename].content;
-                return JSON.parse(content);
+            if (response.ok) {
+                const gist = await response.json();
+                const filename = 'kizilay-hesaplama-data.json';
+                
+                if (gist.files && gist.files[filename]) {
+                    const content = gist.files[filename].content;
+                    return JSON.parse(content);
+                }
+            } else if (response.status === 404) {
+                console.log('Gist bulunamadı, yeni oluşturulacak');
+                return null;
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
             return null;
@@ -357,16 +380,12 @@ class CalculationTable {
             }
             
             // GitHub Gist'e kaydetme
-            if (GITHUB_TOKEN !== 'BURAYA_TOKEN_GELECEK') {
-                const success = await gistManager.saveData(filteredData);
-                
-                if (success) {
-                    this.showNotification('Veriler kaydedildi ve senkronize edildi!', 'success');
-                } else {
-                    this.showNotification('Veriler sadece yerel olarak kaydedildi.', 'warning');
-                }
+            const success = await gistManager.saveData(filteredData);
+            
+            if (success) {
+                this.showNotification('Veriler kaydedildi ve senkronize edildi!', 'success');
             } else {
-                this.showNotification('Veriler yerel olarak kaydedildi. GitHub senkronizasyonu için token ekleyin.', 'info');
+                this.showNotification('Veriler sadece yerel olarak kaydedildi.', 'warning');
             }
             
         } catch (error) {
@@ -410,14 +429,12 @@ class CalculationTable {
             console.log('loadData fonksiyonu çağrıldı');
             
             // Önce GitHub Gist'ten yükle
-            if (GITHUB_TOKEN !== 'BURAYA_TOKEN_GELECEK') {
-                const gistData = await gistManager.loadData();
-                
-                if (gistData) {
-                    this.loadTableData(gistData);
-                    this.showNotification('Veriler GitHub\'dan yüklendi!', 'success');
-                    return;
-                }
+            const gistData = await gistManager.loadData();
+            
+            if (gistData) {
+                this.loadTableData(gistData);
+                this.showNotification('Veriler GitHub\'dan yüklendi!', 'success');
+                return;
             }
             
             // Gist'ten yüklenemezse localStorage'dan yükle
