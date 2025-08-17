@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kızılay Bayraklı Şube Hesaplama</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="kizilay-logo">
+                        <div class="crescent">☪</div>
+                    </div>
+                </div>
+                <div class="title-section">
+                    <h1>Kızılay Bayraklı Şube Hesaplama</h1>
+                    <p>Hedef ve gerçekleştirme değerlerini girin, yüzde ve puanlar otomatik hesaplansın</p>
+                </div>
+                <div class="logout-section">
+                    <button onclick="logout()" class="logout-btn">🚪 Çıkış Yap</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button id="saveData" class="btn btn-success">Verileri Kaydet</button>
+            <button id="exportPDF" class="btn btn-warning">Rapor Oluştur</button>
+            <button id="addRow" class="btn btn-primary">Yeni Satır Ekle</button>
+        </div>
+
+        <div class="table-container">
+            <table id="calculationTable">
+                <thead>
+                    <tr>
+                        <th>KRİTERLER</th>
+                        <th>HEDEF</th>
+                        <th>GERÇEKLEŞMELER</th>
+                        <th>YÜZDE - PUAN</th>
+                        <th>İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Satırlar JavaScript ile eklenecek -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Toplam Puan</h3>
+                <div id="totalScore" class="score">0.00</div>
+            </div>
+            <div class="summary-card">
+                <h3>Ortalama Başarı</h3>
+                <div id="averageSuccess" class="score">0%</div>
+            </div>
+        </div>
+
+        <!-- İstatistikler Bölümü -->
+        <div class="statistics-section">
+            <!-- Net Puan ve Yıldızlar -->
+            <div class="net-score-section">
+                <div class="stars-container">
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                </div>
+                <div class="net-score-label">Net Puan</div>
+                <div class="net-score-gauge">
+                    <div class="gauge-fill" id="gaugeFill"></div>
+                    <div class="gauge-value" id="netScore">0.00</div>
+                </div>
+            </div>
+
+            <!-- Yeşil Puan Kartları -->
+            <div class="green-score-cards">
+                <div class="green-card">
+                    <div class="card-label">Gönüllü Yapı Puanı</div>
+                    <div class="card-value" id="volunteerScore">0.00</div>
+                </div>
+                <div class="green-card">
+                    <div class="card-label">Hizmet Kuruluşu Puanı</div>
+                    <div class="card-value" id="serviceScore">0.00</div>
+                </div>
+            </div>
+
+            <!-- İstatistik Grid -->
+            <div class="stats-grid">
+                <!-- Sarı Kartlar -->
+                <div class="stats-row yellow-row">
+                    <div class="stats-card yellow">
+                        <div class="stats-label">Toplam Puan</div>
+                        <div class="stats-value" id="statsTotalScore">0.00</div>
+                    </div>
+                    <div class="stats-card yellow">
+                        <div class="stats-label">İl Ağırlık</div>
+                        <div class="stats-value" id="provinceWeight">(Boş)</div>
+                    </div>
+                    <div class="stats-card yellow">
+                        <div class="stats-label">İl Gerçekleşme</div>
+                        <div class="stats-value" id="provinceAchievement">(Boş)</div>
+                    </div>
+                </div>
+
+                <!-- Mavi Kartlar -->
+                <div class="stats-row blue-row">
+                    <div class="stats-card blue">
+                        <div class="stats-label">İlçe Ortalama</div>
+                        <div class="stats-value" id="districtAverage">(Boş)</div>
+                    </div>
+                    <div class="stats-card blue">
+                        <div class="stats-label">İlçe Ağırlık</div>
+                        <div class="stats-value" id="districtWeight">(Boş)</div>
+                    </div>
+                    <div class="stats-card blue">
+                        <div class="stats-label">İlçe Gerçekleşen</div>
+                        <div class="stats-value" id="districtAchieved">(Boş)</div>
+                    </div>
+                </div>
+
+                <!-- Pembe Kartlar -->
+                <div class="stats-row pink-row">
+                    <div class="stats-card pink">
+                        <div class="stats-label">Temsilcilik Ortalama</div>
+                        <div class="stats-value" id="representationAverage">(Boş)</div>
+                    </div>
+                    <div class="stats-card pink">
+                        <div class="stats-label">Temsilcilik Ağırlık</div>
+                        <div class="stats-value" id="representationWeight">(Boş)</div>
+                    </div>
+                    <div class="stats-card pink">
+                        <div class="stats-label">Temsilcilik Gerçekleşen</div>
+                        <div class="stats-value" id="representationAchieved">(Boş)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Gerçekleşme Puanı -->
+            <div class="achievement-score-section">
+                <div class="achievement-score-card">
+                    <div class="achievement-label">Gerçekleşme Puanı</div>
+                    <div class="achievement-value" id="achievementScore">0.00</div>
+                </div>
+                         </div>
+         </div>
+     </div>
+     
+     <!-- Footer -->
+     <footer class="footer">
+         <div class="footer-content">
+             <p class="signature">Made by <strong>Ekrem Can Gümüş</strong></p>
+         </div>
+     </footer>
+ 
+     <script src="script.js"></script>
+    
+    <!-- Şifre Kontrolü -->
+    <script>
+        // Sayfa yüklendiğinde şifre kontrolü yap
+        window.addEventListener('load', function() {
+            // Giriş kontrolü
+            const isAuthenticated = localStorage.getItem('kizilay_authenticated') === 'true';
+            const loginTime = localStorage.getItem('kizilay_login_time');
+            
+            if (!isAuthenticated || !loginTime) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 24 saat kontrolü
+            const currentTime = Date.now();
+            const hoursSinceLogin = (currentTime - loginTime) / (1000 * 60 * 60);
+            
+            if (hoursSinceLogin >= 24) {
+                // Süre dolmuşsa giriş bilgilerini temizle ve login sayfasına yönlendir
+                localStorage.removeItem('kizilay_authenticated');
+                localStorage.removeItem('kizilay_login_time');
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+        
+        // Çıkış fonksiyonu
+        function logout() {
+            localStorage.removeItem('kizilay_authenticated');
+            localStorage.removeItem('kizilay_login_time');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

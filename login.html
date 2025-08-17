@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kızılay Bayraklı Şube - Giriş</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .logo-section {
+            margin-bottom: 30px;
+        }
+
+        .kizilay-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .crescent {
+            font-size: 40px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #dc3545;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .password-input {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #dc3545;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+                 .footer-text {
+             margin-top: 30px;
+             color: #666;
+             font-size: 12px;
+         }
+         
+         .signature-text {
+             margin-top: 10px;
+             color: #dc3545;
+             font-size: 14px;
+             font-weight: 600;
+         }
+         
+         .signature-text strong {
+             color: #c82333;
+             font-weight: 700;
+         }
+         
+         /* Mobil Responsive */
+         @media (max-width: 768px) {
+             .login-container {
+                 padding: 30px 20px;
+                 max-width: 95%;
+             }
+             
+             .kizilay-logo {
+                 width: 60px;
+                 height: 60px;
+             }
+             
+             .crescent {
+                 font-size: 30px;
+             }
+             
+             h1 {
+                 font-size: 20px;
+             }
+             
+             .subtitle {
+                 font-size: 13px;
+             }
+             
+             .password-input {
+                 padding: 12px;
+                 font-size: 15px;
+             }
+             
+             .login-btn {
+                 padding: 12px;
+                 font-size: 15px;
+             }
+             
+             .footer-text {
+                 font-size: 11px;
+             }
+             
+             .signature-text {
+                 font-size: 13px;
+             }
+         }
+         
+         @media (max-width: 480px) {
+             .login-container {
+                 padding: 25px 15px;
+                 max-width: 98%;
+             }
+             
+             .kizilay-logo {
+                 width: 50px;
+                 height: 50px;
+             }
+             
+             .crescent {
+                 font-size: 25px;
+             }
+             
+             h1 {
+                 font-size: 18px;
+             }
+             
+             .subtitle {
+                 font-size: 12px;
+             }
+             
+             .password-input {
+                 padding: 10px;
+                 font-size: 14px;
+             }
+             
+             .login-btn {
+                 padding: 10px;
+                 font-size: 14px;
+             }
+         }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="kizilay-logo">
+                <div class="crescent">☪</div>
+            </div>
+            <h1>Kızılay Bayraklı Şube</h1>
+            <p class="subtitle">Hesaplama Sistemi</p>
+        </div>
+
+        <form class="password-form" id="loginForm">
+            <input 
+                type="password" 
+                class="password-input" 
+                id="passwordInput" 
+                placeholder="Şifre giriniz"
+                required
+                autocomplete="off"
+            >
+            <button type="submit" class="login-btn" id="loginBtn">
+                Giriş Yap
+            </button>
+        </form>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Yanlış şifre! Lütfen tekrar deneyin.
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Giriş başarılı! Yönlendiriliyorsunuz...
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
+
+                 <div class="footer-text">
+             © 2025 Kızılay Bayraklı Şube - Tüm hakları saklıdır
+         </div>
+         <div class="signature-text">
+             Made by <strong>Ekrem Can Gümüş</strong>
+         </div>
+     </div>
+
+    <script>
+        const CORRECT_PASSWORD = 'Kızılaybayraklı';
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+
+        // Şifre kontrolü
+        function checkPassword(password) {
+            return password === CORRECT_PASSWORD;
+        }
+
+        // Hata mesajını göster
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+            loading.style.display = 'none';
+        }
+
+        // Başarı mesajını göster
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            loading.style.display = 'none';
+        }
+
+        // Loading göster
+        function showLoading() {
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        // Form submit
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = passwordInput.value.trim();
+            
+            if (!password) {
+                showError('❌ Lütfen şifre giriniz!');
+                return;
+            }
+
+            showLoading();
+            loginBtn.disabled = true;
+
+            // Simüle edilmiş gecikme (gerçek uygulamada bu olmayabilir)
+            setTimeout(() => {
+                if (checkPassword(password)) {
+                    showSuccess();
+                    
+                    // Başarılı giriş - localStorage'a kaydet
+                    localStorage.setItem('kizilay_authenticated', 'true');
+                    localStorage.setItem('kizilay_login_time', Date.now());
+                    
+                    // Ana sayfaya yönlendir
+                    setTimeout(() => {
+                        window.location.href = 'hesaplama.html';
+                    }, 1500);
+                    
+                } else {
+                    showError('❌ Yanlış şifre! Lütfen tekrar deneyin.');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    loginBtn.disabled = false;
+                }
+            }, 1000);
+        });
+
+        // Enter tuşu ile giriş
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Sayfa yüklendiğinde input'a odaklan
+        window.addEventListener('load', function() {
+            passwordInput.focus();
+        });
+
+        // Eğer zaten giriş yapılmışsa ana sayfaya yönlendir
+        if (localStorage.getItem('kizilay_authenticated') === 'true') {
+            const loginTime = localStorage.getItem('kizilay_login_time');
+            const currentTime = Date.now();
+            const hoursSinceLogin = (currentTime - loginTime) / (1000 * 60 * 60);
+            
+            // 24 saat geçerli
+            if (hoursSinceLogin < 24) {
+                window.location.href = 'hesaplama.html';
+            } else {
+                // Süre dolmuşsa giriş bilgilerini temizle
+                localStorage.removeItem('kizilay_authenticated');
+                localStorage.removeItem('kizilay_login_time');
+            }
+        }
+    </script>
+</body>
+</html>
