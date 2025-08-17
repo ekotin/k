@@ -1,5 +1,5 @@
 // GitHub Gist API Konfigürasyonu
-const GITHUB_TOKEN = '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'; // GitHub Personal Access Token
+const GITHUB_TOKEN = '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'; // GitHub Personal Access Token
 const GIST_ID = 'kizilay-hesaplama-gist'; // Sabit Gist ID - tüm cihazlar için aynı
 
 // Gist API fonksiyonları
@@ -393,13 +393,13 @@ class CalculationTable {
                 return;
             }
             
-            // Sadece GitHub Gist'e kaydetme
+            // GitHub Gist'e kaydetme
             const success = await gistManager.saveData(filteredData);
             
             if (success) {
-                this.showNotification('Veriler başarıyla kaydedildi!', 'success');
+                this.showNotification('Veriler kaydedildi ve senkronize edildi!', 'success');
             } else {
-                this.showNotification('Veriler kaydedilemedi!', 'error');
+                this.showNotification('Veriler sadece yerel olarak kaydedildi.', 'warning');
             }
             
         } catch (error) {
@@ -442,16 +442,31 @@ class CalculationTable {
         try {
             console.log('loadData fonksiyonu çağrıldı');
             
-            // Sadece GitHub Gist'ten yükle
+            // Önce GitHub Gist'ten yükle
             const gistData = await gistManager.loadData();
             
             if (gistData) {
                 this.loadTableData(gistData);
-                this.showNotification('Veriler yüklendi!', 'success');
+                this.showNotification('Veriler GitHub\'dan yüklendi!', 'success');
                 return;
             }
             
-            // Gist'ten veri yoksa örnek veriler yükle
+            // Gist'ten yüklenemezse localStorage'dan yükle
+            const savedData = localStorage.getItem('calculationTableData');
+            console.log('localStorage\'dan alınan veri:', savedData);
+            
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                console.log('Parse edilen veri:', data);
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    this.loadTableData(data);
+                    this.showNotification('Veriler yerel olarak yüklendi!', 'info');
+                    return;
+                }
+            }
+            
+            // Hiçbir yerden veri yoksa örnek veriler yükle
             this.loadSampleData();
             this.showNotification('Örnek veriler yüklendi.', 'info');
             
@@ -781,3 +796,4 @@ document.head.appendChild(style);
 
 // Uygulamayı başlat
 const table = new CalculationTable();
+
